@@ -225,6 +225,7 @@ def create_terraform_workspaces(jsonData, easy_jsonData, org):
                 f'{tfDir}/{org}/profiles',
                 f'{tfDir}/{org}/ucs_domain_profiles'
             ]
+
         for folder in folder_list:
             if opSystem == 'Windows':
                 folder_length = len(folder.split('\\'))
@@ -310,8 +311,8 @@ def create_terraform_workspaces(jsonData, easy_jsonData, org):
                             sensitive_vars.append(z)
                     else:
                         for keys, values in json_data.items():
-                            if opSystem == 'Windows':
-                                for key, value in values.items():
+                          #  for item in values:
+                                for key, value in item.items():
                                     for k, v in value.items():
                                         if k == z:
                                             if not v == 0:
@@ -326,7 +327,7 @@ def create_terraform_workspaces(jsonData, easy_jsonData, org):
                                                     if ka == 'bind_method':
                                                         if va == 'ConfiguredCredentials':
                                                             sensitive_vars.append('binding_parameters_password')
-                                        elif k == 'users' or k == 'vmedia_mappings':
+                                        elif k == 'local_users' or k == 'vmedia_mappings':
                                             for itema in v:
                                                 for ka, va in itema.items():
                                                     for itemb in va:
@@ -345,43 +346,6 @@ def create_terraform_workspaces(jsonData, easy_jsonData, org):
                                                             elif kb == 'privacy_password':
                                                                 varValue = 'snmp_privacy_%s_%s' % (z, vb)
                                                                 sensitive_vars.append(varValue)
-                            else:
-                                for item in values:
-                                    for key, value in item.items():
-                                        for i in value:
-                                            for k, v in i.items():
-                                                if k == z:
-                                                    if not v == 0:
-                                                        if y == 'iscsi_boot_policies':
-                                                            varValue = 'iscsi_boot_password'
-                                                        else:
-                                                            varValue = '%s_%s' % (k, v)
-                                                        sensitive_vars.append(varValue)
-                                                elif k == 'binding_parameters':
-                                                    for itema in v:
-                                                        for ka, va in itema.items():
-                                                            if ka == 'bind_method':
-                                                                if va == 'ConfiguredCredentials':
-                                                                    sensitive_vars.append('binding_parameters_password')
-                                                elif k == 'users' or k == 'vmedia_mappings':
-                                                    for itema in v:
-                                                        for ka, va in itema.items():
-                                                            for itemb in va:
-                                                                for kb, vb in itemb.items():
-                                                                    if kb == 'password':
-                                                                        varValue = '%s_%s' % (z, vb)
-                                                                        sensitive_vars.append(varValue)
-                                                elif k == 'snmp_users' and z == 'password':
-                                                    for itema in v:
-                                                        for ka, va in itema.items():
-                                                            for itemb in va:
-                                                                for kb, vb in itemb.items():
-                                                                    if kb == 'auth_password':
-                                                                        varValue = 'snmp_auth_%s_%s' % (z, vb)
-                                                                        sensitive_vars.append(varValue)
-                                                                    elif kb == 'privacy_password':
-                                                                        varValue = 'snmp_privacy_%s_%s' % (z, vb)
-                                                                        sensitive_vars.append(varValue)
                 for var in sensitive_vars:
                     templateVars["Variable"] = var
                     if 'ipmi_key' in var:
@@ -534,7 +498,7 @@ def merge_easy_imm_repository(easy_jsonData, org):
     else:
         tfDir = os.environ.get('TF_DEST_DIR')
 
-    if opSystem == 'Windows' and re.search(r'^(.\\.*[\w\-\.\:\\]+\\|\.\\)$', tfDir):
+    if opSystem == 'Windows' and re.search(r'^(.+\\.*[\w\-\.\:\\]+\\|\.\\)$', tfDir):
         folder_list = [
             f'{tfDir}{org}\\policies',
             f'{tfDir}{org}\\pools',
@@ -570,6 +534,10 @@ def merge_easy_imm_repository(easy_jsonData, org):
             f'./{tfDir}/{org}/ucs_domain_profiles'
         ]
     
+    print(opSystem)
+    print(folder_list)
+    exit
+
     # Get the Latest Release Tag for the terraform-intersight-imm repository
     url = f'https://github.com/terraform-cisco-modules/terraform-intersight-easy-imm/tags/'
     r = requests.get(url, stream=True)
@@ -1297,7 +1265,7 @@ def main():
         for folder in splitDir:
             if folder == '':
                 folderCount = 0
-            elif not re.search(r'^[\w\-\.\:\/]+$', folder):
+            elif not re.search(r'^[\w\-\.\:\/\\]+$', folder):
                 print(folder)
                 print(f'\n-------------------------------------------------------------------------------------------\n')
                 print(f'  !!ERROR!!')
