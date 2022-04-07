@@ -2,6 +2,7 @@
   "{{ name }}" = {
     description  = "{{ descr }}"
     enabled      = {{ enabled|lower }}
+    organization = "{{ org }}"
     timezone     = "{{ timezone }}"
     ntp_servers = [
     {%- for v in ntp_servers %}

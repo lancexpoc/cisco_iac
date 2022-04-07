@@ -1,7 +1,6 @@
 import jinja2
 import json
 import os
-import platform
 import pkg_resources
 import re
 import requests
@@ -13,7 +12,7 @@ from requests.api import delete, request
 
 # Global options for debugging
 print_payload = False
-print_response_always = False
+print_response_always = True
 print_response_on_fail = True
 
 # Log levels 0 = None, 1 = Class only, 2 = Line
@@ -256,11 +255,6 @@ class terraform_cloud(object):
             tf_header = {'Authorization': tf_token,
                     'Content-Type': 'application/vnd.api+json'
             }
-
-            opSystem = platform.system()
-            if opSystem == 'Windows':
-                workingDir = templateVars["workingDirectory"]
-                templateVars["workingDirectory"] = workingDir.replace('\\', '/')
 
             # Define the Template Source
             template_file = 'workspace.jinja2'

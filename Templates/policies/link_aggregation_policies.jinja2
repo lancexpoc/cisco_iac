@@ -2,6 +2,7 @@
   "{{ name }}" = {
     description        = "{{ descr }}"
     lacp_rate          = "{{ lacp_rate }}"
+    organization       = "{{ org }}"
     suspend_individual = {{ suspend_individual|lower }}
 {%- if tags %}
     tags = [

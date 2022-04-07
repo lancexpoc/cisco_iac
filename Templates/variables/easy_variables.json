@@ -22,11 +22,6 @@
                     "HPC_tpm",
                     "Java",
                     "Java_tpm",
-                    "M6_analytical_DB_tpm",
-                    "M6_Data_tpm",
-                    "M6_HPC_tpm",
-                    "M6_relational_DB_tpm",
-                    "M6_Virtualization_tpm",
                     "OLTP",
                     "OLTP_tpm",
                     "Virtualization",
@@ -120,17 +115,6 @@
                 "default": "9508"
             }
         },
-        "server.Generation":{
-            "systemType": {
-                "description": "The Generation of UCS to Apply these Policies to.",
-                "enum":[
-                    "M5",
-                    "M6",
-                    "M7"
-                ],
-                "default": "M6"
-            }
-        },
         "thermal.Policy":{
             "chassisType": {
                 "description": "The Type of Chassis to Apply this Policy to.",
@@ -199,14 +183,14 @@
                     "SRIOV",
                     "usNIC",
                     "usNICOracleRAC",
-                    "VMware",
-                    "VMwarePassThru",
+                    "VMWare",
+                    "VMWarePassThru",
                     "WIN-AzureStack",
                     "Win-HPN",
                     "Win-HPN-SMBd",
                     "Windows"
                 ],
-                "default": "VMware"
+                "default": "VMWare"
             }
         },
         "vnic.FcNetworkPolicy":{
@@ -219,11 +203,11 @@
                     "Linux",
                     "Solaris",
                     "Target",
-                    "VMware",
+                    "VMWare",
                     "WindowsBoot",
                     "Windows"
                 ],
-                "default": "VMware"
+                "default": "VMWare"
             }
         },
         "vnic.PlacementSettings": {
@@ -454,5 +438,5 @@
             "default":""
         }
     },
-    "version":"1.0.2"
+    "version":"0.9.5"
 }

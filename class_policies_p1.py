@@ -1379,23 +1379,23 @@ class policies_p1(object):
         templateVars["template_type"] = 'intersight'
         policyVar = self.type
 
+        templateVars["tfc_organization"] = tfcb_config[0]['tfc_organization']
         templateVars["org"] = org
-        for item in tfcb_config:
-            for k, v in item.items():
-                if k == 'backend':
-                    templateVars["backend"] = v
-                elif k == 'tfc_organization':
-                    templateVars["tfc_organization"] = v
-                if policyVar == 'policies':
+
+        if policyVar == 'policies':
+            for i in tfcb_config:
+                for k, v in i.items():
                     if k == 'pools':
-                        templateVars["pools_ws"] = v
+                        templateVars["ws_pools"] = v
                     elif k == 'ucs_domain_profiles':
-                        templateVars["domain_profiles_ws"] = v
-                elif policyVar == 'profiles':
+                        templateVars["ws_ucs_domain_profiles"] = v
+        elif policyVar == 'profiles':
+             for i in tfcb_config:
+                for k, v in i.items():
                     if k == 'pools':
-                        templateVars["pools_ws"] = v
+                        templateVars["ws_pools"] = v
                     elif k == 'policies':
-                        templateVars["policies_ws"] = v
+                        templateVars["ws_policies"] = v
 
         templateVars["tags"] = '[{ key = "Module", value = "terraform-intersight-easy-imm" }, { key = "Version", value = "'f'{easy_jsonData["version"]}''" }]'
 
@@ -1729,9 +1729,9 @@ class policies_p1(object):
 
                                 templateVars["multi_select"] = False
                                 jsonVars = easy_jsonData['policies']['iam.LdapPolicy']
-                                templateVars["var_description"] = jsonVars['role']['description']
-                                templateVars["jsonVars"] = sorted(jsonVars['role']['enum'])
-                                templateVars["defaultVar"] = jsonVars['role']['default']
+                                templateVars["var_description"] = jsonVars['iam.LdapPolicy']['description']
+                                templateVars["jsonVars"] = sorted(jsonVars['iam.LdapPolicy']['enum'])
+                                templateVars["defaultVar"] = jsonVars['iam.LdapPolicy']['default']
                                 templateVars["varType"] = 'Group Role'
                                 role = variablesFromAPI(**templateVars)
 

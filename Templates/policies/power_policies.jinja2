@@ -1,37 +1,23 @@
 
   "{{ name }}" = {
+{%- if allocated_budget %}
+    allocated_budget    = {{ allocated_budget }}
+{%- else %}
+    allocated_budget    = 0
+{%- endif %}
     description         = "{{ descr }}"
-{%- if dynamic_power_rebalancing %}
-    dynamic_power_rebalancing    = {{ dynamic_power_rebalancing }}
-{%- else %}
-    dynamic_power_rebalancing    = "Enabled"
-{%- endif %}
-{%- if power_allocation %}
-    power_allocation    = {{ power_allocation }}
-{%- else %}
-    power_allocation    = 0
-{%- endif %}
-{%- if power_priority %}
-    power_priority    = {{ power_priority }}
-{%- else %}
-    power_priority    = "Low"
-{%- endif %}
 {%- if power_profiling %}
     power_profiling     = "{{ power_profiling }}"
 {%- else %}
     power_profiling     = "Enabled"
 {%- endif %}
-{%- if power_restore %}
-    power_restore = "{{ power_restore }}"
+{%- if power_restore_state %}
+    power_restore_state = "{{ power_restore_state }}"
 {%- else %}
-    power_restore = "LastState"
+    power_restore_state = "LastState"
 {%- endif %}
-    power_redunancy     = "{{ power_redundancy }}"
-{%- if power_save_mode %}
-    power_save_mode = "{{ power_save_mode }}"
-{%- else %}
-    power_save_mode = "Enabled"
-{%- endif %}
+    redundancy_mode     = "{{ power_redundancy }}"
+    organization        = "{{ org }}"
 {%- if tags %}
     tags = [
   {%- for item in tags %}

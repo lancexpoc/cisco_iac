@@ -4,8 +4,7 @@ intersight
 jinja2
 simplejson
 lxml
-openpyxl
-ordered_set
+pathlib
 phonenumbers
 requests
 stdiomask

@@ -3,30 +3,9 @@
 # Terraform Cloud Variables
 #__________________________________________________________
 
-tfc_workspaces = [{
-  backend          = "{{ backend }}"
-  tfc_organization = "{{ tfc_organization }}"
-{%- if policies_dir %}
-  policies_dir     = "{{ policies_dir }}"
-{%- else %}
-  policies_dir     = null
-{%- endif %}
-{%- if policies_ws %}
-  policies_ws      = "{{ policies_ws }}"
-{%- else %}
-  policies_ws      = null
-{%- endif %}
-{%- if pools_dir %}
-  pools_dir        = "{{ pools_dir }}"
-{%- else %}
-  pools_dir        = null
-{%- endif %}
-{%- if pools_ws %}
-  pools_ws         = "{{ pools_ws }}"
-{%- else %}
-  pools_ws         = null
-{%- endif %}
-}]
+tfc_organization        = "{{ tfc_organization }}"
+ws_pools                = "{{ ws_pools }}"
+ws_policies             = "{{ ws_policies }}"
 
 /*
   We highly recommend that for the terraform_cloud_token you use an environment variable for input:
@@ -48,12 +27,12 @@ tfc_workspaces = [{
 #__________________________________________________________
 
 # endpoint     = "https://intersight.com"
-organization = "{{org}}"
+organizations = ["{{org}}"]
 
-# secretkey    = "~/Downloads/SecretKey.txt"
+# secretkey    = "~/intersight.secret"
 /*
   To export the Secret Key via an Environment Variable the format is as follows (Note: they are not quotation marks, but escape characters):
-  - export TF_VAR_secretkey=`cat ~/Downloads/SecretKey.txt`
+  - export TF_VAR_secretkey=`cat ../../intersight.secret`
   Either way will work in this case as we are not posting the contents of the file here.
 */
 /*

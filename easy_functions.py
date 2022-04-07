@@ -1,72 +1,13 @@
 #!/usr/bin/env python3
 
-from openpyxl import load_workbook
-from ordered_set import OrderedSet
 import json
 import os
-import platform
 import re
 import subprocess
-import sys
 import stdiomask
 import validating
 # from class_policies_domain import policies_domain
 from textwrap import fill
-
-# Log levels 0 = None, 1 = Class only, 2 = Line
-log_level = 2
-
-# Exception Classes
-class InsufficientArgs(Exception):
-    pass
-
-class ErrException(Exception):
-    pass
-
-class InvalidArg(Exception):
-    pass
-
-class LoginFailed(Exception):
-    pass
-
-def api_key(args):
-    if args.api_key_id == None:
-        key_loop = False
-        while key_loop == False:
-            question = stdiomask.getpass(f'The Intersight API Key was not entered as a command line option.\n'\
-                'Please enter the Version 2 Intersight API key to use: ')
-
-            if len(question) == 74:
-                args.api_key_id = question
-                key_loop = True
-            else:
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-                print(f'  Error!! Invalid Value.  The API key length should be 74 characters.  Please Re-Enter.')
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-
-    return args.api_key_id
-
-def api_secret(args):
-    secret_loop = False
-    while secret_loop == False:
-        if '~' in args.api_key_file:
-            secret_path = os.path.expanduser(args.api_key_file)
-        else:
-            secret_path = args.api_key_file
-        if not os.path.isfile(secret_path):
-            print(f'\n-------------------------------------------------------------------------------------------\n')
-            print(f'  Error!! api_key_file not found.')
-            print(f'\n-------------------------------------------------------------------------------------------\n')
-            args.api_key_file = input(f'Please Enter the Path to the File containing the Intersight API Secret: ')
-        else:
-            secret_file = open(secret_path, 'r')
-            if 'RSA PRIVATE KEY' in secret_file.read():
-                secret_loop = True
-            else:
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-                print(f'  Error!! api_key_file does not seem to contain the Private Key.')
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-    return secret_path
 
 def choose_policy(policy, **templateVars):
 
@@ -94,15 +35,6 @@ def choose_policy(policy, **templateVars):
     else:
         policy_short = ""
     return policy_short
-
-# Function to Count the Number of Keys
-def countKeys(ws, func):
-    count = 0
-    for i in ws.rows:
-        if any(i):
-            if str(i[0].value) == func:
-                count += 1
-    return count
 
 def exit_default_no(policy_type):
     valid_exit = False
@@ -165,42 +97,6 @@ def exit_loop_default_yes(loop_count, policy_type):
             print(f'  Error!! Invalid Value.  Please enter "Y" or "N".')
             print(f'\n------------------------------------------------------\n')
     return configure_loop, loop_count, policy_loop
-
-# Function to find the Keys for each Section
-def findKeys(ws, func_regex):
-    func_list = OrderedSet()
-    for i in ws.rows:
-        if any(i):
-            if re.search(func_regex, str(i[0].value)):
-                func_list.add(str(i[0].value))
-    return func_list
-
-# Function to Assign the Variables to the Keys
-def findVars(ws, func, rows, count):
-    var_list = []
-    var_dict = {}
-    for i in range(1, rows + 1):
-        if (ws.cell(row=i, column=1)).value == func:
-            try:
-                for x in range(2, 34):
-                    if (ws.cell(row=i - 1, column=x)).value:
-                        var_list.append(str(ws.cell(row=i - 1, column=x).value))
-                    else:
-                        x += 1
-            except Exception as e:
-                e = e
-                pass
-            break
-    vcount = 1
-    while vcount <= count:
-        var_dict[vcount] = {}
-        var_count = 0
-        for z in var_list:
-            var_dict[vcount][z] = ws.cell(row=i + vcount - 1, column=2 + var_count).value
-            var_count += 1
-        var_dict[vcount]['row'] = i + vcount - 1
-        vcount += 1
-    return var_dict
 
 def ipmi_key_function(**templateVars):
     print(f'\n-------------------------------------------------------------------------------------------\n')
@@ -441,19 +337,10 @@ def policies_parse(org, policy_type, policy):
     else:
         tfDir = os.environ.get('TF_DEST_DIR')
     policies = []
-
-    opSystem = platform.system()
-    if opSystem == 'Windows':
-        policy_file = f'.\{tfDir}\{org}\{policy_type}\{policy}.auto.tfvars'
-    else:
-        policy_file = f'./{tfDir}/{org}/{policy_type}/{policy}.auto.tfvars'
+    policy_file = f'./{tfDir}/{org}/{policy_type}/{policy}.auto.tfvars'
     if os.path.isfile(policy_file):
         if len(policy_file) > 0:
-            if opSystem == 'Windows':
-                cmd = 'hcl2json.exe %s' % (policy_file)
-            else:
-                cmd = 'hcl2json %s' % (policy_file)
-                # cmd = 'json2hcl -reverse < %s' % (policy_file)
+            cmd = 'json2hcl -reverse < %s' % (policy_file)
             p = subprocess.run(
                 cmd,
                 shell=True,
@@ -472,7 +359,8 @@ def policies_parse(org, policy_type, policy):
             else:
                 json_data = json.loads(p.stdout.decode('utf-8'))
                 for i in json_data[policy]:
-                    policies.append(i)
+                    for k, v in i.items():
+                        policies.append(k)
                 return policies,json_data
     else:
         json_data = {}
@@ -498,110 +386,26 @@ def policy_name(namex, policy_type):
         if valid == True:
             return name
 
-# Function to validate input for each method
-def process_kwargs(required_args, optional_args, **kwargs):
-    # Validate all required kwargs passed
-    # if all(item in kwargs for item in required_args.keys()) is not True:
-    #    error_ = '\n***ERROR***\nREQUIRED Argument Not Found in Input:\n "%s"\nInsufficient required arguments.' % (item)
-    #    raise InsufficientArgs(error_)
-    error_count = 0
-    error_list = []
-    for item in required_args:
-        if item not in kwargs.keys():
-            error_count =+ 1
-            error_list += [item]
-    if error_count > 0:
-        error_ = '\n\n***Begin ERROR***\n\n - The Following REQUIRED Key(s) Were Not Found in kwargs: "%s"\n\n****End ERROR****\n' % (error_list)
-        raise InsufficientArgs(error_)
-
-    error_count = 0
-    error_list = []
-    for item in optional_args:
-        if item not in kwargs.keys():
-            error_count =+ 1
-            error_list += [item]
-    if error_count > 0:
-        error_ = '\n\n***Begin ERROR***\n\n - The Following Optional Key(s) Were Not Found in kwargs: "%s"\n\n****End ERROR****\n' % (error_list)
-        raise InsufficientArgs(error_)
-
-    # Load all required args values from kwargs
-    error_count = 0
-    error_list = []
-    for item in kwargs:
-        if item in required_args.keys():
-            required_args[item] = kwargs[item]
-            if required_args[item] == None:
-                error_count =+ 1
-                error_list += [item]
-
-    if error_count > 0:
-        error_ = '\n\n***Begin ERROR***\n\n - The Following REQUIRED Key(s) Argument(s) are Blank:\nPlease Validate "%s"\n\n****End ERROR****\n' % (error_list)
-        raise InsufficientArgs(error_)
-
-    for item in kwargs:
-        if item in optional_args.keys():
-            optional_args[item] = kwargs[item]
-    # Combine option and required dicts for Jinja template render
-    templateVars = {**required_args, **optional_args}
-    return(templateVars)
-
 def process_method(wr_method, dest_dir, dest_file, template, **templateVars):
-    opSystem = platform.system()
-    if opSystem == 'Windows':
-        if os.environ.get('TF_DEST_DIR') is None:
-            tfDir = 'Intersight'
-        else:
-            tfDir = os.environ.get('TF_DEST_DIR')
-        if re.search(r'^\\.*\\$', tfDir):
-            dest_dir = '%s%s\%s' % (tfDir, templateVars["org"], dest_dir)
-        elif re.search(r'^\\.*\w', tfDir):
-            dest_dir = '%s\%s\%s' % (tfDir, templateVars["org"], dest_dir)
-        else:
-            dest_dir = '.\%s\%s\%s' % (tfDir, templateVars["org"], dest_dir)
-        if not os.path.isdir(dest_dir):
-            mk_dir = 'mkdir %s' % (dest_dir)
-            os.system(mk_dir)
-        dest_file_path = '%s\%s' % (dest_dir, dest_file)
-        if not os.path.isfile(dest_file_path):
-            create_file = 'type nul >> %s' % (dest_file_path)
-            os.system(create_file)
-        tf_file = dest_file_path
-        wr_file = open(tf_file, wr_method)
+    if os.environ.get('TF_DEST_DIR') is None:
+        tfDir = 'Intersight'
     else:
-        if os.environ.get('TF_DEST_DIR') is None:
-            tfDir = 'Intersight'
-        else:
-            tfDir = os.environ.get('TF_DEST_DIR')
-        if re.search(r'^\/.*\/$', tfDir):
-            dest_dir = '%s%s/%s' % (tfDir, templateVars["org"], dest_dir)
-        elif re.search(r'^\/.*\w', tfDir):
-            dest_dir = '%s/%s/%s' % (tfDir, templateVars["org"], dest_dir)
-        else:
-            dest_dir = './%s/%s/%s' % (tfDir, templateVars["org"], dest_dir)
-        if not os.path.isdir(dest_dir):
-            mk_dir = 'mkdir -p %s' % (dest_dir)
-            os.system(mk_dir)
-        dest_file_path = '%s/%s' % (dest_dir, dest_file)
-        if not os.path.isfile(dest_file_path):
-            create_file = 'touch %s' % (dest_file_path)
-            os.system(create_file)
-        tf_file = dest_file_path
-        wr_file = open(tf_file, wr_method)
+        tfDir = os.environ.get('TF_DEST_DIR')
+    dest_dir = './%s/%s/%s' % (tfDir, templateVars["org"], dest_dir)
+    if not os.path.isdir(dest_dir):
+        mk_dir = 'mkdir -p %s' % (dest_dir)
+        os.system(mk_dir)
+    dest_file_path = '%s/%s' % (dest_dir, dest_file)
+    if not os.path.isfile(dest_file_path):
+        create_file = 'touch %s' % (dest_file_path)
+        os.system(create_file)
+    tf_file = dest_file_path
+    wr_file = open(tf_file, wr_method)
 
     # Render Payload and Write to File
     payload = template.render(templateVars)
     wr_file.write(payload)
     wr_file.close()
-
-# Function to Read Excel Workbook Data
-def read_in(excel_workbook):
-    try:
-        wb = load_workbook(excel_workbook)
-        print("Workbook Loaded.")
-    except Exception as e:
-        print(f"Something went wrong while opening the workbook - {excel_workbook}... ABORT!")
-        sys.exit(e)
-    return wb
 
 def sensitive_var_value(jsonData, **templateVars):
     sensitive_var = 'TF_VAR_%s' % (templateVars['Variable'])
@@ -1011,22 +815,6 @@ def snmp_users(jsonData, inner_loop_count, **templateVars):
                 print(f'  Error!! Invalid Value.  Please enter "Y" or "N".')
                 print(f'\n------------------------------------------------------\n')
     return snmp_user_list,snmp_loop
-
-# Function to Define stdout_log output
-def stdout_log(sheet, line):
-    if log_level == 0:
-        return
-    elif ((log_level == (1) or log_level == (2)) and
-            (sheet) and (line is None)):
-        #print('*' * 80)
-        print(f'\n-----------------------------------------------------------------------------\n')
-        print(f'   Starting work on {sheet.title} Worksheet')
-        print(f'\n-----------------------------------------------------------------------------\n')
-        #print('*' * 80)
-    elif log_level == (2) and (sheet) and (line is not None):
-        print('Evaluating line %s from %s Worksheet...' % (line, sheet.title))
-    else:
-        return
 
 def syslog_servers(jsonData, **templateVars):
     remote_logging = {}

@@ -4,9 +4,6 @@
 
 ## Updates/News
 
-03-08-2022
-* Added Windows Support
-
 * IMPORTANT - There is currently a bug with Policy Buckets for UCS Domain Profiles.  That is the only reason ucs_domain_profiles are not in the same folder as chassis and servers.  When this is fixed the ucs_domain_profiles folder will be merged with the profiles folder.  Because of this limitation at this time make sure to create a seperate policy for Domains of the following types:
 
 - network_connectivity_policies - If Using Standalone Server Policies
@@ -16,104 +13,27 @@
 
 ## Getting Started
 
-## Install Visual Studio Code
+### Install json2hcl
 
-- Download Here: [Visual Studio Code](https://code.visualstudio.com/Download)
+[json2hcl](https://github.com/kvz/json2hcl)
 
-- Recommended Extensions: 
-  - GitHub Pull Requests and Issues - Author GitHub
-  - HashiCorp Terraform - Author HashiCorp
-  - Pylance - Author Microsoft
-  - Python - Author Microsoft
-  - PowerShell (Windows) - Author Microsoft
-
-- Authorize Visual Studio Code to GitHub via the GitHub Extension
-
-## Install git
-
-- Linux - Use the System Package Manager - apt/yum etc.
-
-```bash
-sudo apt update
-sudo apt install git
-```
-
-- Windows Download Here: [Git](https://git-scm.com/download/win)
-
-configure Git Credentials
-
-```bash
-git config --global user.name "<username>"   
-git config --global user.email "<email>"
-```
-
-### Install the Go Compiler - Linux (Ubuntu Example)
-
-```bash
-sudo apt update
-sudo apt install golang
-```
-### Install the Go Compiler - Windows
-
-- Download Here: [Go](https://go.dev/dl/)
-
-- Add the Go Compiler to the System Path.
-
-```powershell
-$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-$newpath = "$oldpath;C:\Program Files\Go\bin"
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newpath
-```
-
-### Build hcl2json - Linux & Windows
-
-```bash
-git clone https://github.com/tmccombs/hcl2json
-cd hcl2json
-go build
-```
-### Move the hcl2json binary to a system Path
-
-- Linux Example
-
-```bash
-mv ./hcl2json /usr/local/bin/
-or 
-mv ./hcl2json /usr/bin/
-```
-
-- Windows Example
-
-```powershell
-move hcl2json.exe C:\Windows\
-```
-
-## Python Requirements
+### Python Requirements
 
 - Python 3.6 or Greater
-- Linux - Use the System Package Manager - apt/yum etc.
-- Windows Download Here: [Python](https://www.python.org/downloads/) 
-- For Windows.  Make sure python.exe and pip.exe are available via the system path.
-- Windows Example (The Folder Python310 would be according to the Python Release)
 
-```powershell
-$oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).path
-$newpath = "$oldpath;%USERPROFILE%\AppData\Local\Programs\Python\Python310\;%USERPROFILE%\AppData\Local\Programs\Python\Python310\Scripts\"
-Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value $newpath
-```
+[python](https://www.python.org/downloads/release/python-360/)
 
-- Install the Requirements File
+- Refer to requirements.txt for libraries needed to be installed or simply install the requirements file as shown below:
 
 ```bash
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-## Terraform Requirements
+### Terraform Requirements
 
 The script utilizes features introduced in 0.14 of Terraform.  So we need 0.14 or preferrably >1.0
 
-- Download Here [terraform](https://www.terraform.io/downloads.html) 
-- For Windows Make sure it is in a Directory that is in the system path.
+[terraform](https://www.terraform.io/downloads.html)
 
 ### Terraform Modules and Providers
 
@@ -127,46 +47,29 @@ This script will utilize the Intersight Terraform Provider and two modules built
 
 - It is recommend to add the following secure variables to your environment before running the script
 
-- Linux
-
 ```bash
 ## Intersight Variables
 export TF_VAR_apikey="<your_intersight_api_key>"
 export TF_VAR_secretkey=`cat ~/Downloads/SecretKey.txt` 
-# The above example is based on the key being in your Downloads folder.  Correct for your environment.
+# The above example is based on the key being in your Downloads folder.  Correct for your environment
 
 ## Terraform Cloud Variables
 export TF_VAR_terraform_cloud_token="<your_terraform_cloud_token>"
 ```
 
-- Windows - Plugin your API Keys and the File Location of the Intersight Secret Key.
-
-```powershell
-## Powershell Intersight Variables
-$env:TF_VAR_apikey="<your_intersight_api_key>"
-$env:TF_VAR_secretkey="$HOME\Downloads\SecretKey.txt"
-# The above example is based on the key being in your Downloads folder.  Correct for your environment.
-
-## Powershell Terraform Cloud Variables
-$env:TF_VAR_terraform_cloud_token="<your_terraform_cloud_token>"
-```
-
-### Running the Wizard for Brownfield Migration with the IMM Transition Tool
 - Running the wizard to use a configuration migrated from UCS Manager using the IMM Transition Tool
 
 ```bash
 ./main.py -j {json_file_name.json}
 ```
 
-### Running the Wizard for Greenfield Deployment
 - Running the Wizard to generate IaC through a Question and Answer Wizard
 
 ```bash
 ./main.py
 ```
 
-## Wizard Help Menu
-
+- Help Information
 ```bash
 ./main.py -h
 

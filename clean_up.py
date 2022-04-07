@@ -19,7 +19,6 @@ from easy_functions import variablesFromAPI
 from easy_functions import varStringLoop
 from class_terraform import terraform_cloud
 from intersight.api import organization_api
-from intersight.api import resource_api
 from pathlib import Path
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -44,93 +43,34 @@ def delete_terraform_workspaces(org):
         templateVars["tfc_organization"] = terraform_cloud().tfc_organization(**templateVars)
         tfcb_config.append({'tfc_organization':templateVars["tfc_organization"]})
 
-        # Obtain Version Control Provider
-        if os.environ.get('tfc_vcs_provider') is None:
-            tfc_vcs_provider,templateVars["tfc_oath_token"] = terraform_cloud().tfc_vcs_providers(**templateVars)
-            templateVars["tfc_vcs_provider"] = tfc_vcs_provider
-            os.environ['tfc_vcs_provider'] = tfc_vcs_provider
-            os.environ['tfc_oath_token'] = templateVars["tfc_oath_token"]
+        if os.environ.get('TF_DEST_DIR') is None:
+            tfDir = 'Intersight'
         else:
-            templateVars["tfc_vcs_provider"] = os.environ.get('tfc_vcs_provider')
-            templateVars["tfc_oath_token"] = os.environ['tfc_oath_token']
-
-        # Obtain Version Control Base Repo
-        if os.environ.get('vcsBaseRepo') is None:
-            templateVars["vcsBaseRepo"] = terraform_cloud().tfc_vcs_repository(**templateVars)
-            os.environ['vcsBaseRepo'] = templateVars["vcsBaseRepo"]
-        else:
-            templateVars["vcsBaseRepo"] = os.environ.get('vcsBaseRepo')
-
-        repoFoldercheck = False
-        while repoFoldercheck == False:
-            if not os.environ.get('tfWorkDir') is None:
-                tfDir = os.environ.get('tfWorkDir')
-            else:
-                if os.environ.get('TF_DEST_DIR') is None:
-                    tfDir = 'Intersight'
-                    os.environ['tfWorkDir'] = 'Intersight'
-                else:
-                    tfDir = os.environ.get('TF_DEST_DIR')
-            if re.search(r'(^\/|^\.\.)', tfDir):
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-                print(f'  Within Terraform Cloud, the Workspace will be configured with the directory where the ')
-                print(f'  configuration files are stored in the repo: {templateVars["vcsBaseRepo"]}.')
-                print(f'  For Example if the shortpath was "Intersight", The Repo URL end up like:\n')
-                print(f'    - {templateVars["vcsBaseRepo"]}/Intersight/policies')
-                print(f'    - {templateVars["vcsBaseRepo"]}/Intersight/pools')
-                print(f'    - {templateVars["vcsBaseRepo"]}/Intersight/profiles')
-                print(f'    - {templateVars["vcsBaseRepo"]}/Intersight/ucs_domain_profiles\n')
-                print(f'  The Destination Directory has been entered as:\n')
-                print(f'  {tfDir}\n')
-                print(f'  Which looks to be a system path instead of a Repository Directory.')
-                print(f'  Please confirm the Path Below is the short Path to the Repository Directory.')
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-                dirLength = len(tfDir.split('/'))
-                if re.search(r'\/$', tfDir):
-                    question = input(f'Press Enter to Confirm or Make Corrections: [{tfDir.split("/")[dirLength -2]}]: ')
-                else:
-                    question = input(f'Press Enter to Confirm or Make Corrections: [{tfDir.split("/")[dirLength -1]}]: ')
-                if question == '':
-                    if re.search(r'\/$', tfDir):
-                        tfDir = tfDir.split("/")[dirLength -2]
-                    else:
-                        tfDir = tfDir.split("/")[dirLength -1]
-                    os.environ['tfWorkDir'] = tfDir
-                    repoFoldercheck = True
-                else:
-                    tfDir = question
-                    os.environ['tfWorkDir'] = tfDir
-                    repoFoldercheck = True
-            else:
-                repoFoldercheck = True
-            print('reached the end')
+            tfDir = os.environ.get('TF_DEST_DIR')
         folder_list = [
-            f'{tfDir}/{org}/policies',
-            f'{tfDir}/{org}/pools',
-            f'{tfDir}/{org}/profiles',
-            f'{tfDir}/{org}/ucs_domain_profiles'
+            f'./{tfDir}/{org}/policies',
+            f'./{tfDir}/{org}/pools',
+            f'./{tfDir}/{org}/profiles',
+            f'./{tfDir}/{org}/ucs_domain_profiles',
         ]
         for folder in folder_list:
-            folder_length = len(folder.split('/'))
-
-            templateVars["autoApply"] = True
-            templateVars["Description"] = f'Intersight Organization {org} - %s' % (folder.split('/')[folder_length -2])
-            if re.search('(pools|policies|ucs_domain_profiles)', folder.split('/')[folder_length -1]):
+            templateVars["autoApply"] = False
+            templateVars["Description"] = f'Intersight Organization {org} - %s' % (folder.split('/')[3])
+            if re.search('(pools|profiles)', folder.split('/')[3]):
                 templateVars["globalRemoteState"] = True
             else:
                 templateVars["globalRemoteState"] = False
             templateVars["workingDirectory"] = folder
 
             templateVars["Description"] = 'Name of the Workspace to Delete in Terraform Cloud'
-            folder_value = folder.split('/')[folder_length -1]
-            templateVars["varDefault"] = f'{org}_{folder_value}'
-            templateVars["varInput"] = f'Terraform Cloud Workspace Name. [{org}_{folder_value}]: '
+            templateVars["varDefault"] = f'{org}_{folder.split("/")[3]}'
+            templateVars["varInput"] = f'Terraform Cloud Workspace Name. [{org}_{folder.split("/")[3]}]: '
             templateVars["varName"] = f'Workspace Name'
             templateVars["varRegex"] = '^[a-zA-Z0-9\\-\\_]+$'
             templateVars["minLength"] = 1
             templateVars["maxLength"] = 90
             templateVars["workspaceName"] = varStringLoop(**templateVars)
-            tfcb_config.append({folder_value:templateVars["workspaceName"]})
+            tfcb_config.append({folder.split('/')[3]:templateVars["workspaceName"]})
             terraform_cloud().tfcWorkspace_remove(**templateVars)
 
     else:
@@ -154,31 +94,11 @@ def intersight_org_delete(home, org, args):
     if org_list.results:
         org_moid = org_list.results[0].moid
         print(f'\n-------------------------------------------------------------------------------------------\n')
-        print(f'  Organization {org} has the Moid of {org_moid}.')
+        print(f'  Organization {org} has the Moid of {org_moid},')
+        print(f'  proceeding to Delete.')
         print(f'\n-------------------------------------------------------------------------------------------\n')
-        org_remove = True
-        while org_remove == True:
-            Delete = input(f'Do You Want to proceed with deleting {org}?  Enter "Y" or "N": ')
-            if Delete == 'Y':
-                if not org_moid == None:
-                    api_handle.delete_organization_organization(org_moid)
-                    
-                    api_handle = resource_api.ResourceApi(api_client)
-                    query_filter = f"Name eq '{org}_rg'"
-                    kwargs = dict(filter=query_filter)
-                    rg_list = api_handle.get_resource_group_list(**kwargs)
-                    rg_moid = None
-                    if rg_list.results:
-                        rg_moid = rg_list.results[0].moid
-                        api_handle.delete_resource_group(rg_moid)
-
-                    org_remove = False
-            elif Delete == 'N':
-                org_remove = False
-            else:
-                print(f'\n-------------------------------------------------------------------------------------------\n')
-                print(f'  Error!! Invalid Value.  Please enter "Y" or "N".')
-                print(f'\n-------------------------------------------------------------------------------------------\n')
+    if not org_moid == None:
+        api_handle.delete_organization_organization(org_moid)
 
     print(f'\n-------------------------------------------------------------------------------------------\n')
     print(f'  Proceedures Complete!!! Closing Environment and Exiting Script.')

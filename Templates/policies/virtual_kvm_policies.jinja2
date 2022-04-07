@@ -1,10 +1,5 @@
 
   "{{ name }}" = {
-{%- if allow_tunneled_vkvm %}
-    allow_tunneled_vkvm       = {{ allow_tunneled_vkvm|lower }}
-{%- else %}
-    enable_virtual_kvm        = false
-{%- endif %}
     description               = "{{ descr }}"
 {%- if enable_local_server_video %}
     enable_local_server_video = {{ enable_local_server_video|lower }}
@@ -22,11 +17,8 @@
     enable_virtual_kvm        = true
 {%- endif %}
     maximum_sessions          = 4
-{%- if remote_port %}
+    organization              = "{{ org }}"
     remote_port               = {{ remote_port }}
-{%- else %}
-    remote_port               = 2068
-{%- endif %}
 {%- if tags %}
     tags = [
   {%- for item in tags %}

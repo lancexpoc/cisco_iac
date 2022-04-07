@@ -28,8 +28,6 @@
   {%- for k, v in ipv4_configuration.items() %}
     {%- if k == 'gateway' %}
         gateway       = "{{ v }}"
-    {%- elif k == 'netmask' %}
-        netmask       = "{{ v }}"
     {%- elif k == 'prefix' %}
         netmask       = "{{ v }}"
     {%- elif k == 'primary_dns' %}
@@ -81,6 +79,7 @@
 {%- else %}
     ipv6_configs     = {}
 {%- endif %}
+    organization     = "{{ org }}"
 {%- if tags %}
     tags = [
   {%- for item in tags %}

@@ -22,6 +22,8 @@
 {%- else %}
     id_blocks        = {}
 {%- endif %}
+    organization     = "{{ org }}"
+    pool_purpose     = "WWNN"
 {%- if tags %}
     tags = [
   {%- for item in tags %}

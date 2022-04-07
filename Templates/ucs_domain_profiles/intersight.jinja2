@@ -22,13 +22,13 @@
 # Intersight Variables
 #__________________________________________________________
 
-# endpoint      = "https://intersight.com"
-organization  = "{{org}}"
+# endpoint     = "https://intersight.com"
+organizations = ["{{org}}"]
 
-# secretkey    = "~/Downloads/SecretKey.txt"
+# secretkey    = "~/intersight.secret"
 /*
   To export the Secret Key via an Environment Variable the format is as follows (Note: they are not quotation marks, but escape characters):
-  - export TF_VAR_secretkey=`cat ~/Downloads/SecretKey.txt`
+  - export TF_VAR_secretkey=`cat ../../intersight.secret`
   Either way will work in this case as we are not posting the contents of the file here.
 */
 /*

@@ -74,53 +74,26 @@ class policies_p3(object):
                 templateVars["name"] = policy_name(name, policy_type)
                 templateVars["descr"] = policy_descr(templateVars["name"], policy_type)
 
-                templateVars["multi_select"] = False
-                jsonVars = jsonData['components']['schemas']['power.Policy']['allOf'][1]['properties']
-
                 if system_type == '9508':
                     valid = False
                     while valid == False:
-                        templateVars["power_allocation"] = input('What is the Power Budget you would like to Apply?\n'
+                        templateVars["allocated_budget"] = input('What is the Power Budget you would like to Apply?\n'
                             'This should be a value between 2800 Watts and 16800 Watts. [5600]: ')
-                        if templateVars["power_allocation"] == '':
-                            templateVars["power_allocation"] = 5600
-                        valid = validating.number_in_range('Chassis Power Budget', templateVars["power_allocation"], 2800, 16800)
-
-                    templateVars["var_description"] = jsonVars['DynamicRebalancing']['description']
-                    templateVars["jsonVars"] = sorted(jsonVars['DynamicRebalancing']['enum'])
-                    templateVars["defaultVar"] = jsonVars['DynamicRebalancing']['default']
-                    templateVars["varType"] = 'Dynamic Power Rebalancing'
-                    templateVars["dynamic_power_rebalancing"] = variablesFromAPI(**templateVars)
-
-                    templateVars["var_description"] = jsonVars['PowerSaveMode']['description']
-                    templateVars["jsonVars"] = sorted(jsonVars['PowerSaveMode']['enum'])
-                    templateVars["defaultVar"] = jsonVars['PowerSaveMode']['default']
-                    templateVars["varType"] = 'Power Save Mode'
-                    templateVars["power_save_mode"] = variablesFromAPI(**templateVars)
-
+                        if templateVars["allocated_budget"] == '':
+                            templateVars["allocated_budget"] = 5600
+                        valid = validating.number_in_range('Chassis Power Budget', templateVars["allocated_budget"], 2800, 16800)
                 else:
-                    templateVars["power_allocation"] = 0
-                    templateVars["dynamic_power_rebalancing"] = 'Enabled'
-                    templateVars["power_save_mode"] = 'Enabled'
+                    templateVars["allocated_budget"] = 0
+
+                templateVars["multi_select"] = False
+                jsonVars = jsonData['components']['schemas']['power.Policy']['allOf'][1]['properties']
 
                 if system_type == 'Server':
-                    templateVars["var_description"] = jsonVars['PowerPriority']['description']
-                    templateVars["jsonVars"] = sorted(jsonVars['PowerPriority']['enum'])
-                    templateVars["defaultVar"] = jsonVars['PowerPriority']['default']
-                    templateVars["varType"] = 'Power Priority'
-                    templateVars["power_priority"] = variablesFromAPI(**templateVars)
-
-                    templateVars["var_description"] = jsonVars['PowerProfiling']['description']
-                    templateVars["jsonVars"] = sorted(jsonVars['PowerProfiling']['enum'])
-                    templateVars["defaultVar"] = jsonVars['PowerProfiling']['default']
-                    templateVars["varType"] = 'Power Profiling'
-                    templateVars["power_profiling"] = variablesFromAPI(**templateVars)
-
                     templateVars["var_description"] = jsonVars['PowerRestoreState']['description']
                     templateVars["jsonVars"] = sorted(jsonVars['PowerRestoreState']['enum'])
                     templateVars["defaultVar"] = jsonVars['PowerRestoreState']['default']
-                    templateVars["varType"] = 'Power Restore'
-                    templateVars["power_restore"] = variablesFromAPI(**templateVars)
+                    templateVars["varType"] = 'Power Restore State'
+                    templateVars["power_restore_state"] = variablesFromAPI(**templateVars)
 
                 if system_type == '5108':
                     templateVars["popList"] = ['N+2']
@@ -133,17 +106,13 @@ class policies_p3(object):
                 templateVars["power_redundancy"] = variablesFromAPI(**templateVars)
 
                 print(f'\n-------------------------------------------------------------------------------------------\n')
-                print(f'   description               = "{templateVars["descr"]}"')
-                print(f'   name                      = "{templateVars["name"]}"')
                 if system_type == '9508':
-                    # print(f'   dynamic_power_rebalancing = "{templateVars["dynamic_power_rebalancing"]}"')
-                    print(f'   power_allocation          = {templateVars["power_allocation"]}')
-                    # print(f'   power_save_mode           = "{templateVars["power_save_mode"]}"')
+                    print(f'   allocated_budget    = {templateVars["allocated_budget"]}')
+                print(f'   description         = "{templateVars["descr"]}"')
+                print(f'   name                = "{templateVars["name"]}"')
                 if system_type == 'Server':
-                    # print(f'   power_priority            = "{templateVars["power_priority"]}"')
-                    print(f'   power_profiling           = "{templateVars["power_profiling"]}"')
-                    print(f'   power_restore             = "{templateVars["power_restore"]}"')
-                print(f'   power_redundancy          = "{templateVars["power_redundancy"]}"')
+                    print(f'   power_restore_state = "{templateVars["power_restore_state"]}"')
+                print(f'   redundancy_mode     = "{templateVars["power_redundancy"]}"')
                 print(f'\n-------------------------------------------------------------------------------------------\n')
                 valid_confirm = False
                 while valid_confirm == False:
@@ -2068,43 +2037,41 @@ class policies_p3(object):
                 templateVars["enable_virtual_kvm"] = True
                 templateVars["maximum_sessions"] = 4
 
-                # Pull in the Policies for Virtual KVM
-                jsonVars = jsonData['components']['schemas']['kvm.Policy']['allOf'][1]['properties']
-                templateVars["multi_select"] = False
+                valid = False
+                while valid == False:
+                    local_video = input('Do you want to Display KVM on Monitors attached to the Server?  Enter "Y" or "N" [Y]: ')
+                    if local_video == '' or local_video == 'Y':
+                        templateVars["enable_local_server_video"] = True
+                        valid = True
+                    elif local_video == 'N':
+                        templateVars["enable_local_server_video"] = False
+                        valid = True
+                    else:
+                        print(f'\n-------------------------------------------------------------------------------------------\n')
+                        print(f'  Error!! Invalid Value.  Please enter "Y" or "N".')
+                        print(f'\n-------------------------------------------------------------------------------------------\n')
 
-                # Enable Local Server Video
-                templateVars["Description"] = 'Enables Tunneled vKVM on the endpoint. Applicable only for Device Connectors that support Tunneled vKVM'
-                templateVars["varInput"] = f'Do you want to Tunneled vKVM through Intersight for this Policy?\n'
-                '* Note: Make sure to Enable Virtual Tunneled KVM Launch and Configuration under:\n'
-                'Setttings > Settings > Security & Privacy.'
-                templateVars["varDefault"] = 'N'
-                templateVars["varName"] = 'Allow Tunneled vKVM'
-                templateVars["allow_tunneled_vkvm"] = varBoolLoop(**templateVars)
+                valid = False
+                while valid == False:
+                    video_encrypt = input('Do you want to Enable video Encryption?  Enter "Y" or "N" [Y]: ')
+                    if video_encrypt == '' or video_encrypt == 'Y':
+                        templateVars["enable_video_encryption"] = True
+                        valid = True
+                    elif video_encrypt == 'N':
+                        templateVars["enable_video_encryption"] = False
+                        valid = True
+                    else:
+                        print(f'\n-------------------------------------------------------------------------------------------\n')
+                        print(f'  Error!! Invalid Value.  Please enter "Y" or "N".')
+                        print(f'\n-------------------------------------------------------------------------------------------\n')
 
-                # Enable Local Server Video
-                templateVars["Description"] = jsonVars['EnableLocalServerVideo']['description']
-                templateVars["varInput"] = f'Do you want to Display KVM on Monitors attached to the Server?'
-                templateVars["varDefault"] = 'Y'
-                templateVars["varName"] = 'Enable Local Server Video'
-                templateVars["enable_local_server_video"] = varBoolLoop(**templateVars)
-
-                # Enable Video Encryption
-                templateVars["Description"] = jsonVars['EnableVideoEncryption']['description']
-                templateVars["varInput"] = f'Do you want to Enable video Encryption?'
-                templateVars["varDefault"] = 'Y'
-                templateVars["varName"] = 'Enable Video Encryption'
-                templateVars["enable_video_encryption"] = varBoolLoop(**templateVars)
-
-                # Obtain the Port to Use for vKVM
-                templateVars["Description"] = jsonVars['RemotePort']['description']
-                templateVars["varDefault"] =  jsonVars['RemotePort']['default']
-                templateVars["varInput"] = 'What is the Port you would like to Assign for Remote Access?\n'
-                'This should be a value between 1024-65535. [2068]: '
-                templateVars["varName"] = 'Remote Port'
-                templateVars["varRegex"] = '^[0-9]+$'
-                templateVars["minNum"] = 1
-                templateVars["maxNum"] = 65535
-                templateVars["remote_port"] = varNumberLoop(**templateVars)
+                valid = False
+                while valid == False:
+                    templateVars["remote_port"] = input('What is the Port you would like to Assign for Remote Access?\n'
+                        'This should be a value between 1024-65535. [2068]: ')
+                    if templateVars["remote_port"] == '':
+                        templateVars["remote_port"] = 2068
+                    valid = validating.number_in_range('Remote Port', templateVars["remote_port"], 1, 65535)
 
                 print(f'\n-------------------------------------------------------------------------------------------\n')
                 print(f'   description               = "{templateVars["descr"]}"')

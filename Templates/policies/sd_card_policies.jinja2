@@ -2,6 +2,7 @@
   "{{ name }}" = {
     description        = "{{ descr }}"
     enable_os          = {{ partitions[0]['virtual_drives'][0]['enable']|lower }}
+    organization       = "{{ org }}"
 {%- if tags %}
     tags = [
   {%- for item in tags %}

@@ -15,7 +15,6 @@ from easy_functions import choose_policy, policies_parse
 from easy_functions import exit_default_no
 from easy_functions import policy_descr, policy_name
 from easy_functions import ucs_domain_serials
-from easy_functions import varBoolLoop
 from easy_functions import variablesFromAPI
 from easy_functions import varNumberLoop
 from easy_functions import varStringLoop
@@ -123,7 +122,7 @@ class profiles(object):
     #==============================================
     # Quick Start - UCS Server Profile Module
     #==============================================
-    def quick_start_server_profiles(self, jsonData, easy_jsonData, **templateVars):
+    def quick_start_server_profiles(self, **templateVars):
         org = self.org
         policy_type = 'UCS Server Profile'
         templateVars["header"] = '%s Variables' % (policy_type)
@@ -163,7 +162,7 @@ class profiles(object):
             templateVars["descr"] = f'{templateVars["name"]} Server Profile'
             templateVars["ucs_server_profile_template"] = f'{templateVars["boot_order_policy"]}'
 
-            # Obtain Server Serial Number or Skip
+            # Obtain Chassis Serial Number or Skip
             templateVars["Description"] = f'Serial Number of the Server Profile {templateVars["name"]}.'
             templateVars["varDefault"] = ''
             templateVars["varInput"] = f'What is the Serial Number of {templateVars["name"]}? [press enter to skip]:'
@@ -177,32 +176,6 @@ class profiles(object):
                 templateVars["server_assignment_mode"] = 'Static'
             else:
                 templateVars["server_assignment_mode"] = 'None'
-
-            templateVars["multi_select"] = False
-            # Generation of UCS Server
-            jsonVars = easy_jsonData['policies']['server.Generation']
-            templateVars["var_description"] = jsonVars['systemType']['description']
-            templateVars["jsonVars"] = sorted(jsonVars['systemType']['enum'])
-            templateVars["defaultVar"] = jsonVars['systemType']['default']
-            templateVars["varType"] = 'Generation of UCS Server'
-            ucs_generation = variablesFromAPI(**templateVars)
-
-            if ucs_generation == 'M5':
-                # Trusted Platform Module
-                templateVars["Description"] = 'Flag to Determine if the Server has TPM Installed.'
-                templateVars["varInput"] = f'Is a Trusted Platform Module installed in this Server and do you want to enable secure-boot?'
-                templateVars["varDefault"] = 'N'
-                templateVars["varName"] = 'TPM Installed'
-                tpm_installed = varBoolLoop(**templateVars)
-            else:
-                tpm_installed = True
-
-            if ucs_generation == 'M5' and tpm_installed == True:
-                templateVars["bios_policy"] = 'M5_VMware_tpm'
-            elif ucs_generation == 'M5':
-                templateVars["bios_policy"] = 'M5_VMware'
-            elif ucs_generation == 'M6':
-                templateVars["bios_policy"] = 'M6_VMware_tpm'
 
             # Write Policies to Template File
             templateVars["template_file"] = '%s.jinja2' % (templateVars["template_type"])
@@ -234,7 +207,7 @@ class profiles(object):
         templateVars["descr"] = f'{templateVars["name"]} Server Profile Template'
 
         templateVars["uuid_pool"] = 'VMware'
-        templateVars["bios_policy"] = 'M6_VMware'
+        templateVars["bios_policy"] = 'VMware'
         templateVars["boot_policy"] = f'{templateVars["boot_order_policy"]}'
         templateVars["virtual_media_policy"] = ''
         templateVars["ipmi_over_lan_policy"] = f'{org}'
@@ -244,7 +217,7 @@ class profiles(object):
         templateVars["syslog_policy"] = f'{org}'
         templateVars["virtual_kvm_policy"] = f'{org}'
         templateVars["sd_card_policy"] = ''
-        if re.search('VMware_M2', templateVars["boot_order_policy"]):
+        if templateVars["boot_order_policy"] == 'VMware_M2':
             templateVars["storage_policy"] = 'M2_Raid'
         elif templateVars["boot_order_policy"] == 'VMware_Raid1':
             templateVars["storage_policy"] = 'MRAID'
@@ -676,8 +649,6 @@ class profiles(object):
                     # Policies On Hold for Right Now
                     # 'policies.certificate_management_policies.certificate_management_policy',
                     #___________________________________________________________________________
-                    templateVars["uuid_pool"] = ''
-                    templateVars["static_uuid_address"] = ''
                     if templateVars["target_platform"] == 'FIAttached':
                         policy_list = [
                             #___________________________
@@ -729,7 +700,7 @@ class profiles(object):
                             #___________________________
                             'policies.device_connector_policies.device_connector_policy',
                             'policies.ipmi_over_lan_policies.ipmi_over_lan_policy',
-                            'policies.ldap_policies.ldap_policy',
+                            'policies.ldap_policies_policies.ldap_policy',
                             'policies.local_user_policies.local_user_policy',
                             'policies.network_connectivity_policies.network_connectivity_policy',
                             'policies.ntp_policies.ntp_policy',
@@ -784,7 +755,7 @@ class profiles(object):
                     print(f'    bios_policy                = "{templateVars["bios_policy"]}"')
                     print(f'    boot_order_policy          = "{templateVars["boot_policy"]}"')
                     if templateVars["target_platform"] == 'Standalone':
-                        print(f'    persistent_memory_policies = "{templateVars["persistent_memory_policy"]}"')
+                        print(f'    persistent_memory_policies = "{templateVars["persistent_memory_policies"]}"')
                     if templateVars["target_platform"] == 'FIAttached':
                         print(f'    power_policy               = "{templateVars["power_policy"]}"')
                     print(f'    virtual_media_policy       = "{templateVars["virtual_media_policy"]}"')
@@ -795,12 +766,12 @@ class profiles(object):
                     # if target_platform == 'FIAttached':
                     #     print(f'    certificate_management_policy = "{templateVars["pcertificate_management_policy"]}"')
                     if templateVars["target_platform"] == 'Standalone':
-                        print(f'    device_connector_policy       = "{templateVars["device_connector_policy"]}"')
+                        print(f'    device_connector_policies     = "{templateVars["device_connector_policies"]}"')
                     if templateVars["target_platform"] == 'FIAttached':
                         print(f'    imc_access_policy             = "{templateVars["imc_access_policy"]}"')
                     print(f'    ipmi_over_lan_policy          = "{templateVars["ipmi_over_lan_policy"]}"')
                     if templateVars["target_platform"] == 'Standalone':
-                        print(f'    ldap_policy                   = "{templateVars["ldap_policy"]}"')
+                        print(f'    ldap_policies                 = "{templateVars["ldap_policies"]}"')
                     print(f'    local_user_policy             = "{templateVars["local_user_policy"]}"')
                     if templateVars["target_platform"] == 'Standalone':
                         print(f'    network_connectivity_policy   = "{templateVars["network_connectivity_policy"]}"')
@@ -992,10 +963,10 @@ class profiles(object):
                     print(f'    description     = "{templateVars["descr"]}"')
                     print(f'    name            = "{templateVars["name"]}"')
                     print(f'    target_platform = "{templateVars["target_platform"]}"')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     print(f'    #')
                     print(f'    # Compute Configuration')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     if templateVars["target_platform"] == 'FIAttached':
                         print(f'    uuid_pool                  = "{templateVars["uuid_pool"]}"')
                     print(f'    bios_policy                = "{templateVars["bios_policy"]}"')
@@ -1005,10 +976,10 @@ class profiles(object):
                     if templateVars["target_platform"] == 'FIAttached':
                         print(f'    power_policy               = "{templateVars["power_policy"]}"')
                     print(f'    virtual_media_policy       = "{templateVars["virtual_media_policy"]}"')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     print(f'    #')
                     print(f'    # Management Configuration')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     # if target_platform == 'FIAttached':
                     #     print(f'    certificate_management_policy = "{templateVars["certificate_management_policy"]}"')
                     if templateVars["target_platform"] == 'Standalone':
@@ -1031,16 +1002,16 @@ class profiles(object):
                         print(f'    ssh_policy                    = "{templateVars["ssh_policy"]}"')
                     print(f'    syslog_policy                 = "{templateVars["syslog_policy"]}"')
                     print(f'    virtual_kvm_policy            = "{templateVars["virtual_kvm_policy"]}"')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     print(f'    #')
                     print(f'    # Storage Configuration')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     print(f'    sd_card_policy = "{templateVars["sd_card_policy"]}"')
                     print(f'    storage_policy = "{templateVars["storage_policy"]}"')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     print(f'    #')
                     print(f'    # Network Configuration')
-                    print(f'    #___________________________')
+                    print(f'    #___________________________"')
                     if templateVars["target_platform"] == 'Standalone':
                         print(f'    adapter_configuration_policy = "{templateVars["adapter_configuration_policy"]}"')
                     print(f'    lan_connectivity_policy      = "{templateVars["lan_connectivity_policy"]}"')
@@ -1100,13 +1071,10 @@ def policy_select_loop(jsonData, easy_jsonData, name_prefix, policy, **templateV
                     y = y.capitalize()
                     policy_description.append(y)
                 policy_description = " ".join(policy_description)
-                policy_description = policy_description.replace('Ipmi', 'IPMI')
                 policy_description = policy_description.replace('Ip', 'IP')
+                policy_description = policy_description.replace('Ipmi', 'IPMI')
                 policy_description = policy_description.replace('Iqn', 'IQN')
-                policy_description = policy_description.replace('Ldap', 'LDAP')
                 policy_description = policy_description.replace('Ntp', 'NTP')
-                policy_description = policy_description.replace('Sd', 'SD')
-                policy_description = policy_description.replace('Smtp', 'SMTP')
                 policy_description = policy_description.replace('Snmp', 'SNMP')
                 policy_description = policy_description.replace('Ssh', 'SSH')
                 policy_description = policy_description.replace('Wwnn', 'WWNN')
