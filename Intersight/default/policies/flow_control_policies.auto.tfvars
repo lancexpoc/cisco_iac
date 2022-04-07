@@ -4,8 +4,8 @@
 #______________________________________________
 
 flow_control_policies = {
-  "cisco" = {
-    description  = "cisco Flow Control Policy"
+  "cisco-iac" = {
+    description  = "cisco-iac Flow Control Policy"
     priority     = "auto"
     receive      = "Enabled"
     send         = "Enabled"

@@ -4,15 +4,15 @@
 #______________________________________________
 
 port_policies = {
-  "cisco-a" = {
-    description  = "cisco Port Policy"
+  "cisco-iac-a" = {
+    description  = "cisco-iac Port Policy"
     device_model = "UCS-FI-6454"
     port_channel_appliances = {}
     port_channel_ethernet_uplinks = {
       "49" = {
         admin_speed                     = "Auto"
-        ethernet_network_group_policy   = "cisco"
-        flow_control_policy             = "cisco"
+        ethernet_network_group_policy   = "cisco-iac"
+        flow_control_policy             = "cisco-iac"
         interfaces = [
           {
             port_id          = 49
@@ -23,8 +23,8 @@ port_policies = {
             slot_id          = 1
           },
         ]
-        link_aggregation_policy = "cisco"
-        link_control_policy     = "cisco"
+        link_aggregation_policy = "cisco-iac"
+        link_control_policy     = "cisco-iac"
       }
     }
     port_channel_fc_uplinks = {
@@ -65,15 +65,15 @@ port_policies = {
     }
     tags         = []
   }
-  "cisco-b" = {
-    description  = "cisco Port Policy"
+  "cisco-iac-b" = {
+    description  = "cisco-iac Port Policy"
     device_model = "UCS-FI-6454"
     port_channel_appliances = {}
     port_channel_ethernet_uplinks = {
       "49" = {
         admin_speed                     = "Auto"
-        ethernet_network_group_policy   = "cisco"
-        flow_control_policy             = "cisco"
+        ethernet_network_group_policy   = "cisco-iac"
+        flow_control_policy             = "cisco-iac"
         interfaces = [
           {
             port_id          = 49
@@ -84,8 +84,8 @@ port_policies = {
             slot_id          = 1
           },
         ]
-        link_aggregation_policy = "cisco"
-        link_control_policy     = "cisco"
+        link_aggregation_policy = "cisco-iac"
+        link_control_policy     = "cisco-iac"
       }
     }
     port_channel_fc_uplinks = {

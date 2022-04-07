@@ -4,9 +4,9 @@
 #______________________________________________
 
 ethernet_network_group_policies = {
-  "cisco" = {
-    allowed_vlans = "2-44"
-    description   = "cisco Ethernet Network Group Policy"
+  "cisco-iac" = {
+    allowed_vlans = "2-99"
+    description   = "cisco-iac Ethernet Network Group Policy"
     tags          = []
   }
   "MGMT" = {
@@ -28,7 +28,7 @@ ethernet_network_group_policies = {
     tags          = []
   }
   "DATA" = {
-    allowed_vlans = "5-20"
+    allowed_vlans = "5"
     description   = "DATA Ethernet Network Group Policy"
     tags          = []
   }

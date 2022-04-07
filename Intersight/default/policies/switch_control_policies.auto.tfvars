@@ -4,7 +4,7 @@
 #______________________________________________
 
 switch_control_policies = {
-  "cisco" = {
+  "cisco-iac" = {
     description                  = ""
     ethernet_switching_mode      = "end-host"
     fc_switching_mode            = "end-host"

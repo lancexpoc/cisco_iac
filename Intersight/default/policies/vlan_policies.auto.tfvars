@@ -4,15 +4,15 @@
 #______________________________________________
 
 vlan_policies = {
-  "cisco" = {
-    description  = "cisco VLAN Policy"
+  "cisco-iac" = {
+    description  = "cisco-iac VLAN Policy"
     tags            = []
     vlans = {
       "1" = {
         auto_allow_on_uplinks = false
-        vlan_list             = "2-44",
-        multicast_policy      = "cisco",
-        name                  = "cisco",
+        vlan_list             = "2-99",
+        multicast_policy      = "cisco-iac",
+        name                  = "cisco-iac",
         native_vlan           = false
       },
     }

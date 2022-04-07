@@ -4,8 +4,8 @@
 #______________________________________________
 
 multicast_policies = {
-  "cisco" = {
-    description             = "cisco Multicast Policy"
+  "cisco-iac" = {
+    description             = "cisco-iac Multicast Policy"
     querier_ip_address      = ""
     querier_ip_address_peer = ""
     querier_state           = "Disabled"

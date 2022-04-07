@@ -4,26 +4,26 @@
 #______________________________________________
 
 vsan_policies = {
-  "cisco-A" = {
-    description     = "cisco-A VSAN Policy"
+  "cisco-iac-A" = {
+    description     = "cisco-iac-A VSAN Policy"
     uplink_trunking = false
     tags            = []
     vsans = {
       "1" = {
         fcoe_vlan_id   = 100
-        name           = "cisco-a"
+        name           = "cisco-iac-a"
         vsan_id        = 100
       },
     }
   }
-  "cisco-B" = {
-    description     = "cisco-B VSAN Policy"
+  "cisco-iac-B" = {
+    description     = "cisco-iac-B VSAN Policy"
     uplink_trunking = false
     tags            = []
     vsans = {
       "1" = {
         fcoe_vlan_id   = 200
-        name           = "cisco-b"
+        name           = "cisco-iac-b"
         vsan_id        = 200
       },
     }

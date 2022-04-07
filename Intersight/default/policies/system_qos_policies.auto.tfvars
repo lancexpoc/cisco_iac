@@ -4,7 +4,7 @@
 #______________________________________________
 
 system_qos_policies = {
-  "cisco" = {
+  "cisco-iac" = {
     classes = {
       "Platinum" = {
         bandwidth_percent  = 20

@@ -13,13 +13,7 @@ local_user_policies = {
     notification_period       = 15
     password_expiry_duration  = 90
     password_history          = 5
-    users = {
-      "admin" = {
-        enabled = true
-        password = 1
-        role     = "admin"
-      },
-    }
+    local_users         = {}
     tags         = []
   }
 }

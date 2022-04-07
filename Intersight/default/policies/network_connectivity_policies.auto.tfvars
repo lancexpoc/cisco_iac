@@ -4,8 +4,8 @@
 #______________________________________________
 
 network_connectivity_policies = {
-  "cisco" = {
-    description               = "cisco Network Connectivity Policy"
+  "cisco-iac" = {
+    description               = "cisco-iac Network Connectivity Policy"
     enable_ipv6               = false
     update_domain             = ""
     dns_servers_v4 = [

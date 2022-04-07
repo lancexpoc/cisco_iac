@@ -4,9 +4,9 @@
 #______________________________________________
 
 link_control_policies = {
-  "cisco" = {
+  "cisco-iac" = {
     admin_state  = "Enabled"
-    description  = "cisco Link Control Policy"
+    description  = "cisco-iac Link Control Policy"
     mode         = "normal"
     tags         = []
   }

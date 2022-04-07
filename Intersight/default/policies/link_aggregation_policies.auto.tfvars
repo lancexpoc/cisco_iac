@@ -4,8 +4,8 @@
 #______________________________________________
 
 link_aggregation_policies = {
-  "cisco" = {
-    description        = "cisco Link Aggregation Policy"
+  "cisco-iac" = {
+    description        = "cisco-iac Link Aggregation Policy"
     lacp_rate          = "normal"
     suspend_individual = false
     tags               = []

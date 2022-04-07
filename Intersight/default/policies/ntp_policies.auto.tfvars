@@ -4,8 +4,8 @@
 #______________________________________________
 
 ntp_policies = {
-  "cisco" = {
-    description  = "cisco NTP Policy"
+  "cisco-iac" = {
+    description  = "cisco-iac NTP Policy"
     enabled      = true
     timezone     = "America/Chicago"
     ntp_servers = [

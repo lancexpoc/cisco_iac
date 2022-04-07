@@ -4,10 +4,10 @@
 #______________________________________________
 
 ucs_chassis_profiles = {
-  "cisco-1" = {
+  "cisco-iac-1" = {
     action            = "No-op"
     assign_chassis    = false
-    description       = "cisco-1 Chassis Profile."
+    description       = "cisco-iac-1 Chassis Profile."
     imc_access_policy = "default"
     power_policy      = "9508"
     serial_number     = ""
