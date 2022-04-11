@@ -7,9 +7,9 @@ tfc_workspaces = [{
   backend             = "remote"
   tfc_organization    = "xpoc"
   domain_profiles_dir = null
-  domain_profiles_ws  = "cisco_domain_profiles"
+  domain_profiles_ws  = "bywhite_domProfiles"
   pools_dir           = null
-  pools_ws            = "cisco_pools"
+  pools_ws            = "bywhite_pools"
 }]
 
 /*

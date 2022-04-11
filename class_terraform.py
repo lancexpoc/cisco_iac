@@ -255,7 +255,9 @@ class terraform_cloud(object):
 
         if re.search(r'\/', templateVars["workingDirectory"]):
             workingDir = templateVars["workingDirectory"]
-            templateVars["workingDirectory"] = workingDir[1 : ]
+            #templateVars["workingDirectory"] = workingDir[1 : ]
+            #bywhite removed slicing off of first character
+            templateVars["workingDirectory"] = workingDir
         
         if not key_count > 0:
             #-------------------------------
