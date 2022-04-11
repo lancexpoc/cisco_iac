@@ -253,11 +253,12 @@ class terraform_cloud(object):
             workingDir = templateVars["workingDirectory"]
             templateVars["workingDirectory"] = workingDir.replace('\\', '/')
 
-        if re.search(r'\/', templateVars["workingDirectory"]):
+        if re.search(r'^\/', templateVars["workingDirectory"]):
             workingDir = templateVars["workingDirectory"]
-            #templateVars["workingDirectory"] = workingDir[1 : ]
-            #bywhite removed slicing off of first character
-            templateVars["workingDirectory"] = workingDir
+            templateVars["workingDirectory"] = workingDir[1 : ]
+        elif re.search(r'^\.\/', templateVars["workingDirectory"]):
+            workingDir = templateVars["workingDirectory"]
+            templateVars["workingDirectory"] = workingDir[2 : ]
         
         if not key_count > 0:
             #-------------------------------
