@@ -1376,7 +1376,7 @@ locals {
   port_modes = {
     for k, v in local.port_modes_loop : "${v.port_policy}_${k}" => v
   }
-port_modes
+
   #__________________________________________________________
   #
   # Port Policy > Port Channels > Appliance Section - Locals

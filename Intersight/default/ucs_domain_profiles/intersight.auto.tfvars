@@ -23,7 +23,7 @@
 #__________________________________________________________
 
 # endpoint      = "https://intersight.com"
-organization  = "default"
+organization = "default"
 
 # secretkey    = "~/Downloads/SecretKey.txt"
 /*
