@@ -1374,9 +1374,9 @@ locals {
   ])
 
   port_modes = {
-    for k, v in local.port_modes_loop : "${port_policy}_${k}" => v
+    for k, v in local.port_modes_loop : "${v.port_policy}_${k}" => v
   }
-
+port_modes
   #__________________________________________________________
   #
   # Port Policy > Port Channels > Appliance Section - Locals
@@ -1989,7 +1989,7 @@ locals {
   ])
 
   vhbas = {
-    for k, v in local.vhbas_loop : "${san_connectivity_policy}_${k}" => v
+    for k, v in local.vhbas_loop : "${v.san_connectivity_policy}_${k}" => v
   }
 
   #__________________________________________________________
