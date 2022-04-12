@@ -5,7 +5,7 @@
 
 ethernet_network_group_policies = {
   "ucsx" = {
-    allowed_vlans = "2-55"
+    allowed_vlans = "2-66"
     description   = "ucsx Ethernet Network Group Policy"
     tags          = []
   }
@@ -28,7 +28,7 @@ ethernet_network_group_policies = {
     tags          = []
   }
   "DATA" = {
-    allowed_vlans = "22-56"
+    allowed_vlans = "22-66"
     description   = "DATA Ethernet Network Group Policy"
     tags          = []
   }
