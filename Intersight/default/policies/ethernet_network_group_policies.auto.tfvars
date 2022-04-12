@@ -28,7 +28,7 @@ ethernet_network_group_policies = {
     tags          = []
   }
   "DATA" = {
-    allowed_vlans = "22-55"
+    allowed_vlans = "22-56"
     description   = "DATA Ethernet Network Group Policy"
     tags          = []
   }
